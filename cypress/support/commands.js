@@ -1,35 +1,20 @@
 import { faker } from "@faker-js/faker";
 
-Cypress.Commands.add('criarUsuario', () => {
-    const nome = faker.person.firstName();
-    const email = faker.internet.email();
-    const senha = faker.internet.password();
-
-    // Salva os dados no arquivo
-    cy.writeFile('cypress/fixtures/usuario.json', {
-        nome,
-        email,
-        senha
-      });
-
-    Cypress.env('usuarioEmail', email);
-    Cypress.env('usuarioSenha', senha);
-
-    cy.visit('https://automationexercise.com');
-    cy.contains('Signup / Login').click();
-    cy.get('[data-qa="signup-name"]').type(nome);
-    cy.get('[data-qa="signup-email"]').type(email);
+Cypress.Commands.add('criarUsuario', (usuario) => {
+    cy.get('[data-qa="signup-name"]').type(usuario.nome);
+    cy.get('[data-qa="signup-email"]').type(usuario.email);
     cy.get('[data-qa="signup-button"]').click();
+    cy.contains('Enter Account Information').should('be.visible');
 
     cy.get('#id_gender2').check();
-    cy.get('[data-qa="password"]').type(senha);
+    cy.get('[data-qa="password"]').type(usuario.senha);
     cy.get('[data-qa="days"]').select('15');
     cy.get('[data-qa="months"]').select('September');
     cy.get('[data-qa="years"]').select('1999');
     cy.get('#newsletter').check();
     cy.get('#optin').check();
 
-    cy.get('[data-qa="first_name"]').type(nome);
+    cy.get('[data-qa="first_name"]').type(usuario.nome);
     cy.get('[data-qa="last_name"]').type(faker.person.lastName());
     cy.get('[data-qa="address"]').type(faker.location.streetAddress());
     cy.get('[data-qa="country"]').select('Australia');
